@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Surveillance System 404</title>
+
+<style>
+body{
+margin:0;
+background:black;
+color:#00ff00;
+font-family:Courier New;
+overflow:hidden;
+}
+
+/* scanlines */
+body::after{
+content:"";
+position:fixed;
+width:100%;
+height:100%;
+background:repeating-linear-gradient(
+to bottom,
+rgba(0,255,0,0.05),
+rgba(0,255,0,0.05) 2px,
+transparent 2px,
+transparent 4px
+);
+pointer-events:none;
+}
+
+/* glitch */
+.glitch{
+animation:glitch 1s infinite;
+}
+@keyframes glitch{
+0%{text-shadow:2px 2px red;}
+50%{text-shadow:-2px -2px blue;}
+100%{text-shadow:2px -2px red;}
+}
+
+/* layout */
+.container{
+display:grid;
+grid-template-columns:3fr 1fr;
+height:100vh;
+}
+
+/* camera grid */
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+grid-template-rows:repeat(2,1fr);
+gap:5px;
+padding:10px;
+}
+
+.camera{
+border:2px solid #00ff00;
+position:relative;
+background:black;
+overflow:hidden;
+}
+
+.camera video{
+width:100%;
+height:100%;
+object-fit:cover;
+filter:grayscale(1) contrast(1.2);
+}
+
+/* overlay */
+.overlay{
+position:absolute;
+top:5px;
+left:5px;
+font-size:12px;
+}
+
+.timestamp{
+position:absolute;
+bottom:5px;
+right:5px;
+font-size:12px;
+}
+
+/* side panel */
+.panel{
+border-left:2px solid #00ff00;
+padding:10px;
+}
+
+.terminal{
+height:200px;
+overflow:auto;
+border:1px solid #00ff00;
+padding:10px;
+margin-bottom:10px;
+}
+
+input{
+width:100%;
+background:black;
+color:#00ff00;
+border:none;
+border-top:1px solid #00ff00;
+padding:10px;
+}
+
+/* alert */
+.alert{
+position:absolute;
+top:40%;
+left:50%;
+transform:translate(-50%,-50%);
+color:red;
+font-size:30px;
+display:none;
+}
+
+/* blinking */
+.blink{
+animation:blink 1s infinite;
+}
+@keyframes blink{
+0%,50%,100%{opacity:1}
+25%,75%{opacity:0}
+}
+</style>
+
+</head>
+
+<body>
+
+<h2 class="glitch" style="text-align:center;">SURVEILLANCE SYSTEM 404</h2>
+
+<div class="container">
+
+<div class="grid" id="grid"></div>
+
+<div class="panel">
+
+<div class="terminal" id="terminal"></div>
+<input id="cmd" placeholder="enter command...">
+
+</div>
+
+</div>
+
+<div class="alert blink" id="alert">⚠ UNAUTHORIZED ACCESS DETECTED</div>
+
+<script>
+
+// create fake cameras
+let grid=document.getElementById("grid");
+
+for(let i=1;i<=6;i++){
+
+let cam=document.createElement("div");
+cam.className="camera";
+
+cam.innerHTML=`
+<div class="overlay">CAM 0${i}</div>
+<div class="timestamp" id="time${i}"></div>
+`;
+
+grid.appendChild(cam);
+}
+
+// timestamps
+setInterval(()=>{
+for(let i=1;i<=6;i++){
+let t=new Date().toLocaleTimeString();
+document.getElementById("time"+i).innerText=t;
+}
+},1000);
+
+// terminal system
+let terminal=document.getElementById("terminal");
+let input=document.getElementById("cmd");
+
+let commands={
+
+help:"Commands: scan, track, breach, clear",
+
+scan:"Scanning cameras... No anomalies",
+
+track:"AI tracking enabled... Target locked",
+
+breach:"ACCESSING RESTRICTED FILES...",
+
+};
+
+input.addEventListener("keydown",e=>{
+
+if(e.key==="Enter"){
+
+let cmd=input.value;
+
+print("> "+cmd);
+
+if(commands[cmd]){
+print(commands[cmd]);
+}
+
+else{
+print("Unknown command");
+}
+
+if(cmd==="breach"){
+document.getElementById("alert").style.display="block";
+
+setTimeout(()=>{
+print("⚠ SYSTEM TRACE INITIATED");
+},2000);
+}
+
+if(cmd==="clear"){
+terminal.innerHTML="";
+}
+
+input.value="";
+}
+
+});
+
+function print(text){
+terminal.innerHTML+=text+"<br>";
+terminal.scrollTop=terminal.scrollHeight;
+}
+
+// creepy easter egg
+setTimeout(()=>{
+print("...someone is watching...");
+},8000);
+
+</script>
+
+</body>
+</html>
